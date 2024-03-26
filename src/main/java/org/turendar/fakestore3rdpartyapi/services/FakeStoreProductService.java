@@ -68,7 +68,6 @@ public class FakeStoreProductService implements ProductService{
 
     @Override
     public ArrayList<Product> getAllProducts() {
-//        ObjectMapper mapper = new ObjectMapper();
         List<FakeStoreAPIDto> fakeStoleProdLists = new ArrayList<>();
         fakeStoleProdLists = List.of(Objects.requireNonNull(restTemplate.getForObject("https://fakestoreapi.com/products", FakeStoreAPIDto[].class)));
 
