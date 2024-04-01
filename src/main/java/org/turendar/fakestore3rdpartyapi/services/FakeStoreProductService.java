@@ -34,28 +34,6 @@ public class FakeStoreProductService implements ProductService{
         return product;
     }
 
-    private List<Product> convertFakeStoreDtosTOProducts(List<FakeStoreAPIDto> dtos){
-
-        List<Product> productLists = new ArrayList<>();
-        for (FakeStoreAPIDto dto : dtos)
-        {
-            Product product = new Product();
-            product.setId(dto.getId());
-            product.setTitle(dto.getTitle());
-            product.setDescription(dto.getDescription());
-            product.setPrice(dto.getPrice());
-            product.setImage(dto.getImage());
-
-            Category category = new Category();
-            category.setDescription(dto.getCategory());
-            product.setCategory(category);
-
-            productLists.add(product);
-        }
-
-        return productLists;
-    }
-
     @Override
     public Product getProductById(Long id) {
 
@@ -67,10 +45,12 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public ArrayList<Product> getAllProducts() {
-        List<FakeStoreAPIDto> fakeStoleProdLists = new ArrayList<>();
-        fakeStoleProdLists = List.of(Objects.requireNonNull(restTemplate.getForObject("https://fakestoreapi.com/products", FakeStoreAPIDto[].class)));
+    public List<Product> getAllProducts() {
+        FakeStoreAPIDto[] fakeStoleProdLists = restTemplate.getForObject("https://fakestoreapi.com/products", FakeStoreAPIDto[].class);
+        List<Product> productLists = new ArrayList<>();
+        for(FakeStoreAPIDto fsDto : fakeStoleProdLists)
+            productLists.add(convertFakeStoreDtoTOProduct(fsDto));
 
-        return (ArrayList<Product>) convertFakeStoreDtosTOProducts(fakeStoleProdLists);
+        return productLists;
     }
 }
