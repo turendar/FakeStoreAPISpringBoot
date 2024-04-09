@@ -1,6 +1,9 @@
 package org.turendar.fakestore3rdpartyapi.services;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 import org.turendar.fakestore3rdpartyapi.dto.FakeStoreAPIDto;
 import org.turendar.fakestore3rdpartyapi.models.Category;
@@ -11,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@Service
+@Service("fakestoreapiproductservice")
 public class FakeStoreProductService implements ProductService{
     private RestTemplate restTemplate;
     FakeStoreProductService(RestTemplate restTemplate){
@@ -52,5 +55,19 @@ public class FakeStoreProductService implements ProductService{
             productLists.add(convertFakeStoreDtoTOProduct(fsDto));
 
         return productLists;
+    }
+
+    @Override
+    public Product replaceProduct(Long id, Product product) {
+        FakeStoreAPIDto fakeStoreProductDto = new FakeStoreAPIDto();
+        fakeStoreProductDto.setTitle(product.getTitle());
+        fakeStoreProductDto.setImage(product.getImage());
+        fakeStoreProductDto.setDescription(product.getDescription());
+
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(fakeStoreProductDto, FakeStoreAPIDto.class);
+        HttpMessageConverterExtractor<FakeStoreAPIDto> responseExtractor = new HttpMessageConverterExtractor(FakeStoreAPIDto.class, restTemplate.getMessageConverters());
+        FakeStoreAPIDto response =  restTemplate.execute("https://fakestoreapi.com/products/"+id, HttpMethod.PUT, requestCallback, responseExtractor);
+
+        return convertFakeStoreDtoTOProduct(response);
     }
 }

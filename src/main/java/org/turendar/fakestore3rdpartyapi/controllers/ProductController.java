@@ -1,8 +1,7 @@
 package org.turendar.fakestore3rdpartyapi.controllers;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
 import org.turendar.fakestore3rdpartyapi.models.Product;
 import org.turendar.fakestore3rdpartyapi.services.ProductService;
 
@@ -13,7 +12,7 @@ import java.util.List;
 public class ProductController {
 
     private ProductService productService;
-    ProductController(ProductService productService){
+    ProductController(@Qualifier("selfproductservice") ProductService productService){
         this.productService = productService;
     }
     @RequestMapping("/{id}")
@@ -24,5 +23,10 @@ public class ProductController {
     @RequestMapping()
     List<Product> getAllProductBy(){
         return productService.getAllProducts();
+    }
+
+    @PutMapping("/{id}")
+    public Product replaceProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+        return productService.replaceProduct(id, product);
     }
 }
